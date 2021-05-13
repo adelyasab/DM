@@ -1,0 +1,215 @@
+  
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
+public class CountableBloomFilter {
+    public Integer getCount() {
+        return count;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public Integer getHfAmount() {
+        return hfAmount;
+    }
+
+    public Double getPrecision() {
+        return precision;
+    }
+
+    private Set<String> worlds;
+
+    private int[] arr;
+
+    private Integer count;
+
+    private final Integer size;
+
+    private final Integer hfAmount;
+
+    private final Double precision;
+
+    private Integer[] seeds;
+
+    public CountableBloomFilter(Double precision, Integer count) {
+        this.precision = precision;
+        this.count = count;
+        this.size = (int) (- (count * Math.log(precision)) /(Math.log(2) * Math.log(2)));
+        this.hfAmount = (int) ((double) (size) /(double) (count) * Math.log(2));
+        arr = new int[size];
+        Set<Integer> seedsSet = new HashSet<>();
+        Random random = new Random();
+        while (seedsSet.size() != hfAmount){
+            seedsSet.add(Math.abs(random.nextInt()));
+        }
+        seeds = seedsSet.toArray(Integer[]::new);
+    }
+
+
+    private Integer getHash(String s, Integer seed, Integer m){
+        Long hash = 1L;
+        for(int i = 0; i < s.length(); i++){
+            hash = (hash * seed.longValue() + s.charAt(i));
+        }
+        hash = Math.abs(hash % m);
+        return  hash.intValue();
+    }
+
+    public void addValue(String s){
+        for (int i = 0; i < seeds.length; i++){
+            arr[getHash(s, seeds[i], size)]++;
+        }
+    }
+
+    public void delete(String s){
+        if (contains(s)){
+            for (int i = 0; i < seeds.length; i++){
+                arr[getHash(s, seeds[i], size)]--;
+            }
+        } else {
+            throw new IllegalArgumentException("CBF not contains \"" + s + "\"");
+        }
+
+    }
+
+    public boolean contains(String s){
+        for (int i = 0; i < seeds.length; i++){
+            if (arr[getHash(s, seeds[i], size)] <= 0){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+"
+
+public class Main {
+    public static void main(String[] args) {
+        String s = "\n" +
+                    "ЖД билеты онлайн\n" +
+    "Удобный онлайн сервис для покупки билетов на поезда РЖД\n"+
+    "Моментальная покупка билетов\n"+
+    "Купить и оформить билеты РЖД н"а сайте можно всего за две минуты.\n"+
+    "Удобная схема вагонов онлайн\n"+
+    "Выбирайте места в поездах даль" него следования на понятных схемах вагона.\n"+
+    "Электронная регистрация\n" +
+    "Бронируйте ЖД билеты и ре"гистр ируйтесь на поезд онлайн.\n"+
+    "Выгодные\n" +
+    "цены\n" +
+    "ЖД билеты напрямую из системы РЖД. Следите за акциями и скидками.\n" +
+    "Популярные ж/д направления по России\n" +
+    "Анапа — Москва\n" +
+    "Белгород — Москва\n" +
+    "Брянск — Москва\n" +
+    "Владивосток — Москва\n" +
+    "Волгоград — Москва\n" +
+    "Вологда — М +осква\n"
+    "Воронеж — Москва\n" +
+    "Казань — Москва\n" +
+    "Краснодар — Москва\n" +
+    "Курск — Москва\n" +
+    "Москва — Санкт-Петербург\n" +
+    "Нижний Новгород — Москва\n" +
+    "Нижний Новгород — СПб\n" +
+    "Новосибирск — Красноярск\n" +
+    "Новосибирск — Москва\n" +    "
+    "Самара — Москва\n" +
+    "Санкт-Петербург — Москва\n" +
+    "Саратов — Москва\n" +
+    "Смоленск — Москва\n" +
+    "Сочи — Краснодар\n" +
+    "Фирменные поезда ОАО "РЖД"\n" +
+    "Поезд Сапсан\n" +
+    "Москва — Санкт-Петербург от 2500 руб.\n" +
+    "Санкт-Петербург — Москва от 2300 руб.\n" +
+    "Поезд Ласточка\n" +
+    "Москва — Тула от 358 руб.\n" +
+    "Москва — Нижний Новгород от 576 руб.\n" +
+    "Поезд Аллегро\n" +
+    "Санкт-Петербург — Хельсинки от 4900 руб.\n" +
+    "Поезд Стриж\n" +
+    "Москва — Нижний Новгород от 578 руб.\n" +
+    "Москва — Берлин от 11 408 руб.\n" +
+    "\n" +
+    "Популярные поезда - сегодня\n"+
+    "Поезд 028ч Москва — Симферополь\n"+
+    "Поезд 007а Санкт-Петербург — Севастополь\n"+
+    "Поезд 001ж Волгоград — Москва\n"+
+    "Поезд 001 э Владивосток — Москва\n"+
+    "Поезд 009ж Саратов — Москва\n"+
+    "Поезд 012 м Москва — Анапа\n"+
+    "Поезд 015ж Волгоград — Москва\n"+
+    "Поезд 030й Новороссийск — Москва\n"+
+    "Поезд 047ж Балаково — Москва\n"+
+    "Поезд 059н Новокузнецк — Кисловодск\n"+
+    "Поезд 001э Владивосток — Москва\n"+
+    "Поезд 002э Москва — Владивосток\n"+
+    "Поезд 104 В Москва —Адлер\n"+
+    "Поезд 105ж Волгоград — Нижневартовск\n"+
+    "Поезд 035а Санкт-Петербург — Адлер\n"+
+    "Поезд 036с Адлер — Санкт-Петербург\n"+
+    "Поезд 139н Новосибирск — Адлер\n"+
+    "Поезд 140с Адлер — Новосибирск\n"+
+    "Поезд 003с Кисловодск — Москва\n"+
+    "Поезд 004м Москва — Кисловодск\n"+
+    "Поезд 375я Воркута — Москва\n"+
+    "Поезд 376я Москва — Воркута\n"+
+    "Поезд 069я Чита — Москва\n"+
+    "Поезд 070ч Москва — Чита\n"+
+    "Новости и скидки на жд билеты\n"+
+    "СКИДКА ДО 50% НА ЖД БИЛЕТЫ В КУПЕ В МАЕ 2021\n"+
+    "При покупке жд билетов до 11 мая 2021 г. на поезда отправлением до 31 мая 2021 г. вы получите скидку 50% на верхние места в вагонах купе поездов формирования "ФПК".\n"+
+    "ДОПОЛНИТЕЛЬНЫЕ ПОЕЗДА РЖД НА МАЙСКИЕ ПРАЗДНИКИ 2021\n"
+    "ОАО  запустит до 660 дополнительных поездов на длинные майские праздники - с 27 апреля 2021 по 12 мая 2021 года из Москвы, Санкт-Петербурга и других городов.\n" +
+    "ЖД БИЛЕТЫ НА "ЛАСТОЧКУ" ОТ 495 РУБ.
+    "В Екатеринбург, Пермь, Тюмень и Курган можно поехать на "Ласточке" со скидкой при покупке билетов до 25 декабря 2021 г. на даты отправления с 26 марта 2021 г. по 25 декабря 2021 г.
+    "СКИДКИ НА ЖД БИЛЕТЫ В ДВУХЭТАЖНЫЕ ПОЕЗДА ДО 20 МАЯ!\n" +
+    "До 20 мая 2021 г. можно купить жд билет в вагоны купе двухэтажных поездов по специальной цене на даты отправления с 1 апреля 2021 г. по 20 мая 2021 г.\n" +
+    "Как заказать билеты на поезд?\n" +
+    "Наш сервис позволят за пару кликов заказать билеты на поезд онлайн.\n" +
+    "\n";
+
+
+        String[] strings = s.split(" ");
+
+        CountableBloomFilter countableBloomFilter = new CountableBloomFilter(0.0001, strings.length);
+        for (int i = 0; i < strings.length; i++){
+            countableBloomFilter.addValue(strings[i]);
+        }
+
+        System.out.println(countableBloomFilter.contains("qwe"));
+        System.out.println(countableBloomFilter.contains("qwe"));
+
+        countableBloomFilter.addValue("qwe");
+        System.out.println(countableBloomFilter.contains("qwe"));
+
+        countableBloomFilter.addValue("Аксессуар");
+        countableBloomFilter.addValue("Сережки");
+        countableBloomFilter.addValue("Кольцо");
+        countableBloomFilter.addValue("Предмет");
+        countableBloomFilter.addValue("Поле");
+        countableBloomFilter.addValue("была");
+        countableBloomFilter.addValue("помощь");
+        countableBloomFilter.addValue("книга");
+        countableBloomFilter.addValue("Три");
+
+
+        System.out.println("-------------------------------------");
+        System.out.println(countableBloomFilter.contains(("Аксессуар")));
+        System.out.println(countableBloomFilter.contains(("Сережки")));
+        System.out.println(countableBloomFilter.contains(("Кольцо")));
+        System.out.println(countableBloomFilter.contains(("Предмет")));
+        System.out.println(countableBloomFilter.contains(("Поле")));
+        System.out.println(countableBloomFilter.contains(("была")));
+        System.out.println(countableBloomFilter.contains(("помощь")));
+        System.out.println(countableBloomFilter.contains(("книга")));
+        System.out.println(countableBloomFilter.contains(("Три")));
+        countableBloomFilter.delete("Три");
+        System.out.println(countableBloomFilter.contains(("Три")));
+
+
+    }
+}
